@@ -1,5 +1,3 @@
-# app.py
-
 from flask import Flask, request, jsonify, render_template, redirect
 from database import db_session
 from models import User, Channel, Message
