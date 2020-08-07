@@ -3,7 +3,7 @@ module.exports = {
   devServer: {
     proxy: {
       "/api": {
-        target: "https://esl-chat-app.herokuapp.com/",
+        target: "http://localhost:5000",
         ws: false,
         changeOrigin: true
       }
