@@ -9,7 +9,7 @@
         <b-nav-item href="#">Check your level (coming soon!)</b-nav-item>
           </b-navbar-nav>
             <b-navbar-nav class="ml-auto logged_user" >
-                Welcome back, {{logged_user}}
+                Hi {{logged_user}}!
             </b-navbar-nav>
         </b-collapse>
     </b-navbar>
