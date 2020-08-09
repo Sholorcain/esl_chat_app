@@ -6,7 +6,19 @@
       <b-row class="main-area">
         <b-col cols="3" class="users">
           <Users :users="users" v-on:chat="chat" />
-          <Topic />
+          <Topic /><div class="test-button"><p>Finished chatting?</p>
+              <button
+      type="button"
+      class="btn"
+      @click="showModal"
+    >
+      Test yourself
+    </button>
+    </div>
+    <modal
+      v-show="isModalVisible"
+      @close="closeModal"
+    />
         </b-col>
         <b-col cols="9" class="messages-area">
           <div class="messages-main">
@@ -16,6 +28,7 @@
             >
               Select a user to start chatting, and click "generate topic" to select your conversation topic!
             </div>
+
             <Messages 
               v-else 
               :active_chat="active_chat_id" 
@@ -27,6 +40,7 @@
       </b-row>
     </b-container>
   </div>
+
 </template>
 
 <script>
@@ -36,6 +50,7 @@ import NavBar from "./components/NavBar.vue";
 import Login from "./components/Login.vue";
 import Users from "./components/Users.vue";
 import Topic from "./components/Topic.vue";
+import modal from "./components/modal.vue";
 import Pusher from "pusher-js";
 
 // Declare pusher variable so it's global to this file.
@@ -49,7 +64,8 @@ export default {
     Messages,
     Users,
     Login,
-    Topic
+    Topic,
+    modal,
   },
       data: function() {
         return {
@@ -60,8 +76,11 @@ export default {
           active_chat_index: null,
           logged_user_id: null,
           logged_user_username: null,
-          current_chat_channel: null
-        };
+          current_chat_channel: null,
+
+          isModalVisible: false,
+      };
+
       },
       methods: {
         async setAuthenticated(login_status, user_data) {
@@ -251,6 +270,13 @@ export default {
           );
         },
 
+        showModal() {
+        this.isModalVisible = true;
+      },
+      closeModal() {
+        this.isModalVisible = false;
+      }
+
         },
 
     };
@@ -290,5 +316,21 @@ export default {
 }
 .logged_user {
   color: white;
+}
+
+.test-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.btn {
+  background: #0390fc;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 </style>

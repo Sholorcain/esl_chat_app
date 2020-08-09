@@ -31,7 +31,7 @@
 
 #topic {
   max-width: 250px;
-  height: 250px;
+  height: 200px;
   border-radius: 0px;
   display: flex;
   justify-content: center;

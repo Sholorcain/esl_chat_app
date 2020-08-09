@@ -67,7 +67,7 @@ export default {
 
 <style scoped>
 .login {
-  width: 500px;
+  max-width: 500px;
   border: 1px solid #cccccc;
   background-color: #ffffff;
   margin: auto;
