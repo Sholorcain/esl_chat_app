@@ -140,35 +140,35 @@
 
   .btn-green {
     color: white;
-    background: #4AAE9B;
+    background: #0390fc;
     border: 1px solid #4AAE9B;
     border-radius: 2px;
   }
 
 
-#main {
-  width: 80%;
-  max-width: 950px;
-  border: 1px gray solid;
-  margin: auto;
-  padding: 10px;
-  padding-left: 40px;
-  background-color: white;
-  border-radius: 10px;
-}
+  #main {
+    width: 80%;
+    max-width: 950px;
+    border: 1px gray solid;
+    margin: auto;
+    padding: 10px;
+    padding-left: 40px;
+    background-color: white;
+    border-radius: 10px;
+  }
 
 
-label {
-  display: block;
-}
+  label {
+    display: block;
+  }
 
-input {
-  width: 30px;
-}
+  input {
+    width: 30px;
+  }
 
-h3 {
-  clear: both;
-  padding-top: 20px;
-}
+  h3 {
+    clear: both;
+    padding-top: 20px;
+  }
 
 </style>
