@@ -53,7 +53,7 @@ import Topic from "./components/Topic.vue";
 import modal from "./components/modal.vue";
 import Pusher from "pusher-js";
 
-// Declare pusher variable so it's global to this file.
+// Pusher variable declared
 let pusher;
 
 export default {
@@ -102,12 +102,12 @@ export default {
               }
           });
 
-          // Get all the users from the server
+          // Retrieve users from  server
           const users = await this.axios.get("/api/users", {
             headers: { Authorization: "Bearer " + this.token }
           });
 
-          // Get all users excluding the current logged user
+          // Get every user other than currently logged
           this.users = users.data.filter(
             user => user.userName != user_data.username
           );
@@ -123,16 +123,16 @@ export default {
               this.$set(this.messages, data.channel_name, []);
 
               one_on_one_chat.bind("new_message", data => {
-                // Check if the current chat channel is where the message is coming from
+                // Check current chat channel
                 if (
                   data.channel !== this.current_chat_channel &&
                   data.from_user !== this.logged_user_id
                 ) {
-                  // Get the index of the user that sent the message
+                  // Get user index
                   const index = this.users.findIndex(
                     user => user.id == data.from_user
                   );
-                  // Set the has_new_message status of the user to true
+
                   this.$set(this.users, index, {
                     ...this.users[index],
                     has_new_message: true
@@ -152,18 +152,18 @@ export default {
                 var presenceChannel = pusher.subscribe("presence-chitchat");
 
                 presenceChannel.bind("pusher:member_added", data => {
-                  // Get the index of user that just scubscribed
+                  // Get index of subscribed user
                   const index = this.users.findIndex(user => user.id == data.id);
 
-                  // Set the is_online status of the user to true
+                 //set is_online to true
                   this.$set(this.users, index, { ...this.users[index], is_online: true });
                 });
 
                 presenceChannel.bind("pusher:member_removed", data => {
-                  // Get the index of user that just subscribed
+
                   const index = this.users.findIndex(user => user.id == data.id);
 
-                  // Set the is_online status of the user to false
+                  // Set  is_online to false
                   this.$set(this.users, index, {
                     ...this.users[index],
                     is_online: false
@@ -171,7 +171,7 @@ export default {
                 });
 
                 presenceChannel.bind("pusher:subscription_succeeded", data => {
-                  // Fetch members already on this channel, then set them to be online
+                  // Set members already on channel to online
                   for (let member_id of Object.keys(data.members)) {
                     const index = this.users.findIndex(user => user.id == member_id);
                     this.$set(this.users, index, {
@@ -194,12 +194,12 @@ export default {
         chat: function(id) {
           this.active_chat_id = id;
 
-          // Get index of the current chatting user...
+          // Get index of  current chatting user
           this.active_chat_index = this.users.findIndex(
             user => user.id == this.active_chat_id
           );
 
-          // Set the has_new_message status of the user to true
+          // Set  has_new_message to true
           this.$set(this.users, this.active_chat_index, {
             ...this.users[this.active_chat_index],
             has_new_message: false
@@ -231,12 +231,12 @@ export default {
                 this.$set(this.messages, response.data.channel_name, []);
 
                 channel.bind("new_message", data => {
-                 //Check if the current chat channel is where the message is comming from
+
                   if (
                     data.channel !== this.current_chat_channel &&
                     data.from_user !== this.logged_user_id
                   ) {
-                    // Set the has_new_message status of the user to true
+
                     this.$set(this.users, this.active_chat_index, {
                       ...this.users[this.active_chat_index],
                       has_new_message: true

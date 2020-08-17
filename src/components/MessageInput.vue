@@ -3,7 +3,7 @@
         <b-form-input 
           v-model="message_input"
           type="text"
-          placeholder="Enter your message"
+          placeholder="Type your message, then hit Enter"
           v-on:keyup.enter.native="send_message"
         >
         </b-form-input>

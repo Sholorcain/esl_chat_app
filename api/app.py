@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect
-from database import db_session
 from models import User, Channel, Message
+from database import db_session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -10,6 +10,7 @@ from flask_jwt_extended import (
 import os
 import pusher
 
+# initialize Pusher library
 app = Flask(__name__)
 pusher = pusher.Pusher(
     app_id=os.getenv('PUSHER_APP_ID'),
@@ -17,19 +18,21 @@ pusher = pusher.Pusher(
     secret=os.getenv('PUSHER_SECRET'),
     cluster=os.getenv('PUSHER_CLUSTER'),
     ssl=True)
-app.config['JWT_SECRET_KEY'] = 'something-super-secret'  # Change this!
+app.config['JWT_SECRET_KEY'] = 's3cr3t-k3y'
 jwt = JWTManager(app)
 
 
 @app.route('/')
 def index():
-    return jsonify("Pong!")
+    return jsonify("Flask is running successfully!")
 
+# close database connection once op is complete
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
 
+# route for adding users and logging in
 
 @app.route('/api/register', methods=["POST"])
 def register():
@@ -44,12 +47,12 @@ def register():
     except:
         return jsonify({
             "status": "error",
-            "message": "Could not add user"
+            "message": "User could not be added"
         })
 
     return jsonify({
         "status": "success",
-        "message": "User added successfully"
+        "message": "User added!"
     }), 201
 
 
@@ -63,7 +66,7 @@ def login():
     if not user or not check_password_hash(user.password, password):
         return jsonify({
             "status": "failed",
-            "message": "Failed getting user"
+            "message": "Could not login"
         }), 401
 
     # Generate a token
@@ -71,7 +74,7 @@ def login():
 
     return jsonify({
         "status": "success",
-        "message": "login successful",
+        "message": "User was logged in successfully",
         "data": {
             "id": user.id,
             "token": access_token,
@@ -79,22 +82,24 @@ def login():
         }
     }), 200
 
+# Creating endpoints for: requesting chat, authenticate channels sub, send message, get users, and get messages
+
 @app.route('/api/request_chat', methods=["POST"])
 @jwt_required
 def request_chat():
     request_data = request.get_json()
     from_user = request_data.get('from_user', '')
     to_user = request_data.get('to_user', '')
-    to_user_channel = "private-notification_user_%s" %(to_user)
-    from_user_channel = "private-notification_user_%s" %(from_user)
+    to_user_channel = "private-notification_user_%s" % (to_user)
+    from_user_channel = "private-notification_user_%s" % (from_user)
 
-    # check if there is a channel that already exists between this two user
-    channel = Channel.query.filter( Channel.from_user.in_([from_user, to_user]) ) \
-                           .filter( Channel.to_user.in_([from_user, to_user]) ) \
-                           .first()
+    # check if a channel exists between the two users
+    channel = Channel.query.filter(Channel.from_user.in_([from_user, to_user])) \
+        .filter(Channel.to_user.in_([from_user, to_user])) \
+        .first()
     if not channel:
-        # Generate a channel...
-        chat_channel = "private-chat_%s_%s" %(from_user, to_user)
+        # generate new channel
+        chat_channel = "private-chat_%s_%s" % (from_user, to_user)
 
         new_channel = Channel()
         new_channel.from_user = from_user
@@ -103,7 +108,7 @@ def request_chat():
         db_session.add(new_channel)
         db_session.commit()
     else:
-        # Use the channel name stored on the database
+        # Use existing channel
         chat_channel = channel.name
 
     data = {
@@ -114,7 +119,7 @@ def request_chat():
         "channel_name": chat_channel,
     }
 
-    # Trigger an event to the other user
+    # an event is triggered to the other use
     pusher.trigger(to_user_channel, 'new_chat', data)
 
     return jsonify(data)
@@ -143,6 +148,7 @@ def pusher_authentication():
 
     return jsonify(auth)
 
+
 @app.route("/api/send_message", methods=["POST"])
 @jwt_required
 def send_message():
@@ -170,6 +176,7 @@ def send_message():
 
     return jsonify(message)
 
+
 @app.route('/api/users')
 @jwt_required
 def users():
@@ -178,10 +185,11 @@ def users():
         [{"id": user.id, "userName": user.username} for user in users]
     ), 200
 
+
 @app.route('/api/get_message/<channel_id>')
 @jwt_required
 def user_messages(channel_id):
-    messages = Message.query.filter( Message.channel_id == channel_id ).all()
+    messages = Message.query.filter(Message.channel_id == channel_id).all()
 
     return jsonify([
         {
@@ -193,6 +201,7 @@ def user_messages(channel_id):
         }
         for message in messages
     ])
+
 
 # run Flask app
 if __name__ == "__main__":
